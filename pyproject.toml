@@ -1,0 +1,33 @@
+[project]
+name = "winzy-whitelist"
+version = "0.0.1"
+description = "Whitelist python created exe's to make them bat scripts."
+readme = "README.md"
+authors = [{name = "Sukhbinder Singh"}]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "License :: OSI Approved :: Apache Software License"
+]
+dependencies = [
+    "winzy",
+]
+
+[project.urls]
+Homepage = "https://github.com/sukhbinder/winzy-whitelist"
+Changelog = "https://github.com/sukhbinder/winzy-whitelist/releases"
+Issues = "https://github.com/sukhbinder/winzy-whitelist/issues"
+CI = "https://github.com/sukhbinder/winzy-whitelist/actions"
+
+[project.entry-points."winzy.plugins"]
+wlist = "winzy_whitelist:wlist_plugin"
+
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
