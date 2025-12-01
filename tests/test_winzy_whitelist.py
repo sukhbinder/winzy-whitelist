@@ -79,7 +79,7 @@ def test_ensure_script_exists_no_module(mock_detect_module, mock_exists):
 @patch('builtins.open', new_callable=mock_open)
 def test_create_batchfile(mock_open_file, mock_ensure_script):
     w.create_batchfile('app_name', '/fake/dir/app.exe')
-    mock_open_file.assert_called_once_with('/fake/dir/app_name.bat', 'w', encoding='utf-8')
+    mock_open_file.assert_called_once_with('/fake/dir/app_name.bat', 'w', encoding='utf-8', newline='')
     handle = mock_open_file()
     handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\\r\\n@exit /b %ERRORLEVEL%\\r\\n')
 
@@ -88,7 +88,7 @@ def test_create_batchfile(mock_open_file, mock_ensure_script):
 @patch('builtins.open', new_callable=mock_open)
 def test_create_batchfile_alt_name(mock_open_file, mock_ensure_script):
     w.create_batchfile('app_name', '/fake/dir/app.exe', alt_app_name='alt_name')
-    mock_open_file.assert_called_once_with('/fake/dir/alt_name.bat', 'w', encoding='utf-8')
+    mock_open_file.assert_called_once_with('/fake/dir/alt_name.bat', 'w', encoding='utf-8', newline='')
     handle = mock_open_file()
     handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\\r\\n@exit /b %ERRORLEVEL%\\r\\n')
 
