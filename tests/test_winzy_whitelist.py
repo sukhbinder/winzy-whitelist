@@ -1,7 +1,7 @@
 import pytest
 import winzy_whitelist as w
 from unittest.mock import patch, mock_open
-
+import os
 
 from argparse import Namespace, ArgumentParser
 
@@ -22,10 +22,10 @@ def test_find_exe_path_not_found():
         w.find_exe_path("non_existent_app")
 
 
-@patch('shutil.which', return_value='/fake/path/to/executable.exe')
+@patch('shutil.which', return_value=os.path.join(os.path.sep, 'fake', 'path', 'to', 'executable.exe'))
 def test_find_exe_path_success(mock_which):
     path = w.find_exe_path("any_app")
-    assert path == '/fake/path/to/executable.exe'
+    assert path == os.path.join(os.path.sep, 'fake', 'path', 'to', 'executable.exe')
     # Test that it adds .exe
     w.find_exe_path("any_app")
     mock_which.assert_called_with("any_app.exe")
@@ -36,8 +36,8 @@ def test_find_exe_path_success(mock_which):
 
 @patch('os.path.exists', return_value=True)
 def test_ensure_script_exists_already_exists(mock_exists):
-    script_path = w._ensure_script_exists('/fake/dir', 'app_name')
-    assert script_path == '/fake/dir/app_name-script.py'
+    script_path = w._ensure_script_exists(os.path.join(os.path.sep, 'fake', 'dir'), 'app_name')
+    assert script_path == os.path.join(os.path.sep, 'fake', 'dir', 'app_name-script.py')
 
 
 @patch('os.path.exists', return_value=False)
@@ -58,9 +58,10 @@ def test_ensure_script_exists_creates_script(mock_open_file, mock_detect_module,
         attr='main'
     )
 
-    script_path = w._ensure_script_exists('/fake/dir', 'app_name')
-    assert script_path == '/fake/dir/app_name-script.py'
-    mock_open_file.assert_called_once_with('/fake/dir/app_name-script.py', 'w', encoding='utf-8')
+    script_path = w._ensure_script_exists(os.path.join(os.path.sep, 'fake', 'dir'), 'app_name')
+    expected_script_path = os.path.join(os.path.sep, 'fake', 'dir', 'app_name-script.py')
+    assert script_path == expected_script_path
+    mock_open_file.assert_called_once_with(expected_script_path, 'w', encoding='utf-8')
     handle = mock_open_file()
     handle.write.assert_called_once()
     written_content = handle.write.call_args[0][0]
@@ -71,26 +72,26 @@ def test_ensure_script_exists_creates_script(mock_open_file, mock_detect_module,
 @patch('os.path.exists', return_value=False)
 @patch('winzy_whitelist._detect_module', return_value=None)
 def test_ensure_script_exists_no_module(mock_detect_module, mock_exists):
-    script_path = w._ensure_script_exists('/fake/dir', 'app_name')
+    script_path = w._ensure_script_exists(os.path.join(os.path.sep, 'fake', 'dir'), 'app_name')
     assert script_path is None
 
 
-@patch('winzy_whitelist._ensure_script_exists', return_value='/fake/dir/app_name-script.py')
+@patch('winzy_whitelist._ensure_script_exists', return_value=os.path.join(os.path.sep, 'fake', 'dir', 'app_name-script.py'))
 @patch('builtins.open', new_callable=mock_open)
 def test_create_batchfile(mock_open_file, mock_ensure_script):
-    w.create_batchfile('app_name', '/fake/dir/app.exe')
-    mock_open_file.assert_called_once_with('/fake/dir/app_name.bat', 'w', encoding='utf-8', newline='')
+    w.create_batchfile('app_name', os.path.join(os.path.sep, 'fake', 'dir', 'app.exe'))
+    mock_open_file.assert_called_once_with(os.path.join(os.path.sep, 'fake', 'dir', 'app_name.bat'), 'w', encoding='utf-8')
     handle = mock_open_file()
-    handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\\r\\n@exit /b %ERRORLEVEL%\\r\\n')
+    handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\n@exit /b %ERRORLEVEL%\n')
 
 
-@patch('winzy_whitelist._ensure_script_exists', return_value='/fake/dir/app_name-script.py')
+@patch('winzy_whitelist._ensure_script_exists', return_value=os.path.join(os.path.sep, 'fake', 'dir', 'app_name-script.py'))
 @patch('builtins.open', new_callable=mock_open)
 def test_create_batchfile_alt_name(mock_open_file, mock_ensure_script):
-    w.create_batchfile('app_name', '/fake/dir/app.exe', alt_app_name='alt_name')
-    mock_open_file.assert_called_once_with('/fake/dir/alt_name.bat', 'w', encoding='utf-8', newline='')
+    w.create_batchfile('app_name', os.path.join(os.path.sep, 'fake', 'dir', 'app.exe'), alt_app_name='alt_name')
+    mock_open_file.assert_called_once_with(os.path.join(os.path.sep, 'fake', 'dir', 'alt_name.bat'), 'w', encoding='utf-8')
     handle = mock_open_file()
-    handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\\r\\n@exit /b %ERRORLEVEL%\\r\\n')
+    handle.write.assert_called_once_with('@python "%~dp0app_name-script.py" %*\n@exit /b %ERRORLEVEL%\n')
 
 
 def test_plugin(capsys):
