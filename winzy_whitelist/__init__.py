@@ -86,7 +86,7 @@ def create_batchfile(app_name, exe_path, alt_app_name=None):
 
     # Use the script file name (not absolute) so the batch file stays portable within the folder
     script_name = os.path.basename(script_path)
-    bat_contents = f'@python "%~dp0{script_name}" %*\n@exit /b %ERRORLEVEL%\n'
+    bat_contents = f'@python "%~dp0{script_name}" %*\\r\\n@exit /b %ERRORLEVEL%\\r\\n'
     with open(bat_path, "w", encoding="utf-8") as fh:
         fh.write(bat_contents)
     print(bat_path)
