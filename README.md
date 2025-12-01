@@ -27,6 +27,13 @@ winzy wlist winzy --alt-app-name wiz
 
 This will create a wiz.bat in the correct place and now you can use winzy using the new name `wiz`. If alt-app-name is not provided `winzy.bat` gets created.
 
+## How it Works
+
+When you run `winzy wlist <app_name>`, the tool performs the following steps:
+
+1.  **Finds the Executable**: It searches for the `<app_name>.exe` file in your system's PATH.
+2.  **Creates a Companion Script**: In the same directory as the executable, it creates a Python script named `<app_name>-script.py`. This script is designed to call the main function of your application. The tool automatically detects the correct module to import and function to call by inspecting the `console_scripts` entry points defined in your application's packaging.
+3.  **Creates a Batch File**: Finally, it creates a batch file (e.g., `<app_name>.bat` or an alternative name if specified) that executes the companion script using `python`. This allows you to run your application through the batch file without directly using the `.exe`.
 
 ## Development
 
@@ -40,6 +47,7 @@ Now install the dependencies and test dependencies:
 ```bash
 pip install -e '.[test]'
 ```
+### Running Tests
 To run the tests:
 ```bash
 python -m pytest
