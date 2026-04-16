@@ -1,6 +1,6 @@
 [project]
 name = "winzy-whitelist"
-version = "0.0.1"
+version = "0.1.0"
 description = "Whitelist python created exe's to make them bat scripts."
 readme = "README.md"
 authors = [{name = "Sukhbinder Singh"}]
