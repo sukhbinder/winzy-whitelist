@@ -34,7 +34,7 @@ jobs:
         run: |
           python -m pytest -v
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
